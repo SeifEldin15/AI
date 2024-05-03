@@ -11,9 +11,8 @@ This repository contains Python code for performing sentiment analysis using SVM
 
 2. Install required libraries 
    ```bash
-pip install pandas scikit-learn
-
-python sentiment_analysis.py
+   pip install pandas scikit-learn
+   python sentiment_analysis.py
 
 ## Code Explanation
 
