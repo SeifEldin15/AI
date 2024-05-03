@@ -1,41 +1,40 @@
-import pandas as pd
-import re
-import nltk
-from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.svm import SVC
 from sklearn.metrics import classification_report
+from sklearn import svm
+import pandas as pd
 
-nltk.download('stopwords')
-stop_words = set(stopwords.words('english'))
+# Load the text file
+file_path = input("Enter the path to the text file: ")
+with open(file_path, 'r') as file:
+    text = file.read()
 
-def preprocess_text(text):
-    text = re.sub(r'<[^>]+>', '', text)
-    text = text.lower()
-    text = re.sub(r'[^\w\s]', '', text)
-    text = ' '.join(word for word in text.split() if word not in stop_words)
-    return text
+# Create a DataFrame with the text
+data = {'Content': [text]}
+input_data = pd.DataFrame(data)
 
-# Assuming you have a CSV file with columns 'review' and 'sentiment'
-df = pd.read_csv('2.csv')
-X = df['review']
-y = df['sentiment']
-X_processed = X.apply(preprocess_text)
+# Load the training data and test data
+trainData = pd.read_csv("train.csv")
+testData = pd.read_csv("test.csv")
 
-vectorizer = TfidfVectorizer(max_features=1000)
-X_vectorized = vectorizer.fit_transform(X_processed)
+# Create feature vectors
+vectorizer = TfidfVectorizer(min_df=5, max_df=0.8, sublinear_tf=True, use_idf=True)
+train_vectors = vectorizer.fit_transform(trainData['Content'])
+test_vectors = vectorizer.transform(testData['Content'])
+input_vectors = vectorizer.transform(input_data['Content'])
 
-svm_classifier = SVC(kernel='linear')
-svm_classifier.fit(X_vectorized, y)
+# Perform classification with SVM, kernel=linear
+classifier_linear = svm.SVC(kernel='linear')
+classifier_linear.fit(train_vectors, trainData['Label'])
+prediction_linear = classifier_linear.predict(input_vectors)
 
-# Take user input
-user_input = input("Enter your text to test sentiment: ")
-processed_input = preprocess_text(user_input)
-vectorized_input = vectorizer.transform([processed_input])
-
-# Predict sentiment
-predicted_sentiment = svm_classifier.predict(vectorized_input)[0]
-if predicted_sentiment == 1:
-    print("Positive sentiment detected.")
+if prediction_linear[0] == 'pos':
+    print("Sentiment: Positive")
+elif prediction_linear[0] == 'neg':
+    print("Sentiment: Negative")
 else:
-    print("Negative sentiment detected.")
+    print("Sentiment: Neutral")
+
+# Generate classification report for test data
+test_predictions = classifier_linear.predict(test_vectors)
+print("\nClassification Report for Test Data:")
+print(classification_report(testData['Label'], test_predictions))
