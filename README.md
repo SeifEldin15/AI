@@ -8,7 +8,9 @@ This repository contains Python code for performing sentiment analysis using SVM
    ```bash
    git clone https://github.com/seifeldin15/sentiment-analysis-svm.git
    cd sentiment-analysis-svm
-   
+
+2. Install required libraries 
+   ```bash
 pip install pandas scikit-learn
 
 python sentiment_analysis.py
