@@ -13,8 +13,8 @@ data = {'Content': [text]}
 input_data = pd.DataFrame(data)
 
 # Load the training data and test data
-trainData = pd.read_csv("train.csv")
-testData = pd.read_csv("test.csv")
+trainData = pd.read_csv("data/train.csv")
+testData = pd.read_csv("data/test.csv")
 
 # Create feature vectors
 vectorizer = TfidfVectorizer(min_df=5, max_df=0.8, sublinear_tf=True, use_idf=True)
